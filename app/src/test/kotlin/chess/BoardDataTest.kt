@@ -975,6 +975,122 @@ class BoardDataTest {
         assertEquals(expected, actual)
     }
 
+    @Test fun boardDataPawnCaptureLeftEnPassant() {
+        val boardData = BoardData(
+            whitePawns = BoardData.UByteToULong(listOf<UByte>(
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00010000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+            )),
+            blackPawns = BoardData.UByteToULong(listOf<UByte>(
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00100000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+            )),
+
+            pieceStayed = 0uL,
+            enPassantSquare = BoardData.UByteToULong(listOf<UByte>(
+                0b00000000u,
+                0b00000000u,
+                0b00100000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+            )),
+        )
+
+        val actual = boardData.pawnCaptures()
+        val expected = setOf(
+            BoardData(
+                whitePawns = BoardData.UByteToULong(listOf<UByte>(
+                    0b00000000u,
+                    0b00000000u,
+                    0b00100000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                )),
+                blackPawns = 0uL,
+                enPassantSquare = 0uL,
+
+                whiteTurn = false,
+            ),
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test fun boardDataPawnCaptureRightEnPassant() {
+        val boardData = BoardData(
+            whitePawns = BoardData.UByteToULong(listOf<UByte>(
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b01000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+            )),
+            blackPawns = BoardData.UByteToULong(listOf<UByte>(
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00100000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+            )),
+
+            pieceStayed = 0uL,
+            enPassantSquare = BoardData.UByteToULong(listOf<UByte>(
+                0b00000000u,
+                0b00000000u,
+                0b00100000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+            )),
+        )
+
+        val actual = boardData.pawnCaptures()
+        val expected = setOf(
+            BoardData(
+                whitePawns = BoardData.UByteToULong(listOf<UByte>(
+                    0b00000000u,
+                    0b00000000u,
+                    0b00100000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                )),
+                blackPawns = 0uL,
+                enPassantSquare = 0uL,
+
+                whiteTurn = false,
+            ),
+        )
+        assertEquals(expected, actual)
+    }
+
     @Test fun boardDataPawnCaptureRight() {
         val boardData = BoardData(
             whitePawns = BoardData.UByteToULong(listOf<UByte>(

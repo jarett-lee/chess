@@ -198,11 +198,16 @@ data class BoardData(
         for (move in whitePawnsLeftCaptureMoves) {
             val originalSquare = BitShiftDown(BitShiftRight(move))
 
-            val newBlackPawns = blackPawns and move.inv()
-            val newBlackKnights = blackKnights and move.inv()
-            val newBlackBishops = blackBishops and move.inv()
-            val newBlackRooks = blackRooks and move.inv()
-            val newBlackQueens = blackQueens and move.inv()
+            var pawnLocation = move
+            if ((move and enPassantSquare).countOneBits() > 0) {
+                pawnLocation = BitShiftDown(enPassantSquare)
+            }
+
+            val newBlackPawns = blackPawns and pawnLocation.inv()
+            val newBlackKnights = blackKnights and pawnLocation.inv()
+            val newBlackBishops = blackBishops and pawnLocation.inv()
+            val newBlackRooks = blackRooks and pawnLocation.inv()
+            val newBlackQueens = blackQueens and pawnLocation.inv()
 
             val newWhiteTurn = !whiteTurn
             val newPieceStayed = pieceStayed and originalSquare.inv() and move.inv()
@@ -253,11 +258,16 @@ data class BoardData(
         for (move in whitePawnsRightCaptureMoves) {
             val originalSquare = BitShiftDown(BitShiftLeft(move))
 
-            val newBlackPawns = blackPawns and move.inv()
-            val newBlackKnights = blackKnights and move.inv()
-            val newBlackBishops = blackBishops and move.inv()
-            val newBlackRooks = blackRooks and move.inv()
-            val newBlackQueens = blackQueens and move.inv()
+            var pawnLocation = move
+            if ((move and enPassantSquare).countOneBits() > 0) {
+                pawnLocation = BitShiftDown(enPassantSquare)
+            }
+
+            val newBlackPawns = blackPawns and pawnLocation.inv()
+            val newBlackKnights = blackKnights and pawnLocation.inv()
+            val newBlackBishops = blackBishops and pawnLocation.inv()
+            val newBlackRooks = blackRooks and pawnLocation.inv()
+            val newBlackQueens = blackQueens and pawnLocation.inv()
 
             val newWhiteTurn = !whiteTurn
             val newPieceStayed = pieceStayed and originalSquare.inv() and move.inv()
