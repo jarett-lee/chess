@@ -99,6 +99,150 @@ class BoardDataTest {
         assertEquals(expected, actual)
     }
 
+    @Test fun boardDataBitShiftUp() {
+        val actual = BoardData.BitShiftUp(BoardData.UByteToULong(listOf<UByte>(
+            0b01000001u,
+            0b00000000u,
+            0b00010000u,
+            0b10000000u,
+            0b00000100u,
+            0b00000000u,
+            0b00000001u,
+            0b10000000u,
+        )))
+        val expected = BoardData.UByteToULong(listOf<UByte>(
+            0b00000000u,
+            0b00010000u,
+            0b10000000u,
+            0b00000100u,
+            0b00000000u,
+            0b00000001u,
+            0b10000000u,
+            0b00000000u,
+        ))
+        assertEquals(expected, actual)
+    }
+
+    @Test fun boardDataBitShiftDown() {
+        val actual = BoardData.BitShiftDown(BoardData.UByteToULong(listOf<UByte>(
+            0b01000001u,
+            0b00000000u,
+            0b00010000u,
+            0b10000000u,
+            0b00000100u,
+            0b00000000u,
+            0b00000001u,
+            0b10000000u,
+        )))
+        val expected = BoardData.UByteToULong(listOf<UByte>(
+            0b00000000u,
+            0b01000001u,
+            0b00000000u,
+            0b00010000u,
+            0b10000000u,
+            0b00000100u,
+            0b00000000u,
+            0b00000001u,
+        ))
+        assertEquals(expected, actual)
+    }
+
+    @Test fun boardDataBitShiftUp2() {
+        val actual = BoardData.BitShiftUp(BoardData.UByteToULong(listOf<UByte>(
+            0b01000001u,
+            0b00000000u,
+            0b00010000u,
+            0b10000000u,
+            0b00000100u,
+            0b00000000u,
+            0b00000001u,
+            0b10000000u,
+        )), 2)
+        val expected = BoardData.UByteToULong(listOf<UByte>(
+            0b00010000u,
+            0b10000000u,
+            0b00000100u,
+            0b00000000u,
+            0b00000001u,
+            0b10000000u,
+            0b00000000u,
+            0b00000000u,
+        ))
+        assertEquals(expected, actual)
+    }
+
+    @Test fun boardDataBitShiftDown2() {
+        val actual = BoardData.BitShiftDown(BoardData.UByteToULong(listOf<UByte>(
+            0b01000001u,
+            0b00000000u,
+            0b00010000u,
+            0b10000000u,
+            0b00000100u,
+            0b00000000u,
+            0b00000001u,
+            0b10000000u,
+        )), 2)
+        val expected = BoardData.UByteToULong(listOf<UByte>(
+            0b00000000u,
+            0b00000000u,
+            0b01000001u,
+            0b00000000u,
+            0b00010000u,
+            0b10000000u,
+            0b00000100u,
+            0b00000000u,
+        ))
+        assertEquals(expected, actual)
+    }
+
+    @Test fun boardDataBitShiftLeft() {
+        val actual = BoardData.BitShiftLeft(BoardData.UByteToULong(listOf<UByte>(
+            0b01000001u,
+            0b00000000u,
+            0b00010000u,
+            0b10000000u,
+            0b00000100u,
+            0b00000000u,
+            0b00000001u,
+            0b10000000u,
+        )))
+        val expected = BoardData.UByteToULong(listOf<UByte>(
+            0b10000010u,
+            0b00000000u,
+            0b00100000u,
+            0b00000000u,
+            0b00001000u,
+            0b00000000u,
+            0b00000010u,
+            0b00000000u,
+        ))
+        assertEquals(expected, actual)
+    }
+
+    @Test fun boardDataBitShiftRight() {
+        val actual = BoardData.BitShiftRight(BoardData.UByteToULong(listOf<UByte>(
+            0b01000001u,
+            0b00000000u,
+            0b00010000u,
+            0b10000000u,
+            0b00000100u,
+            0b00000000u,
+            0b00000001u,
+            0b10000000u,
+        )))
+        val expected = BoardData.UByteToULong(listOf<UByte>(
+            0b00100000u,
+            0b00000000u,
+            0b00001000u,
+            0b01000000u,
+            0b00000010u,
+            0b00000000u,
+            0b00000000u,
+            0b01000000u,
+        ))
+        assertEquals(expected, actual)
+    }
+
     @Test fun boardDataPawnMovesOne() {
         val boardData = BoardData(
             whitePawns = BoardData.UByteToULong(listOf<UByte>(

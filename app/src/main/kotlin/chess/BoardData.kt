@@ -53,6 +53,24 @@ data class BoardData(
             }
             return moves
         }
+
+        fun BitShiftUp(num: ULong, by: Int = 1): ULong {
+            return num shl (8 * by)
+        }
+
+        fun BitShiftDown(num: ULong, by: Int = 1): ULong {
+            return num shr (8 * by)
+        }
+
+        fun BitShiftLeft(num: ULong): ULong {
+            // 0b01111111 = 0x7F
+            return (num and 0x7F7F7F7F7F7F7F7FuL) shl 1
+        }
+
+        fun BitShiftRight(num: ULong): ULong {
+            // 0b11111110 0xFE
+            return (num and 0xFEFEFEFEFEFEFEFEuL) shr 1
+        }
     }
 
     fun whitePieces(): ULong {
@@ -74,11 +92,10 @@ data class BoardData(
     fun pawnMoves(): Set<BoardData> {
         val boards = mutableSetOf<BoardData>()
 
-        // shl 8 is equivalant to moving 1 forward
-        val whitePawnsMoveOne = (whitePawns shl 8) and emptySquares()
+        val whitePawnsMoveOne = BitShiftUp(whitePawns) and emptySquares()
         val whitePawnsMoveOneMoves = OneBitSet(whitePawnsMoveOne)
         for (move in whitePawnsMoveOneMoves) {
-            val originalSquare = move shr 8
+            val originalSquare = BitShiftDown(move)
             val newWhitePawns = (whitePawns and originalSquare.inv()) or move
 
             val newWhiteTurn = !whiteTurn
@@ -95,16 +112,22 @@ data class BoardData(
         }
 
         val whitePawnsStayed = whitePawns and pieceStayed
-        val whitePawnsStayedMoveOne = (whitePawnsStayed shl 8) and emptySquares()
-        val whitePawnsStayedMoveTwo = (whitePawnsStayedMoveOne shl 8) and emptySquares()
+        val whitePawnsStayedMoveOne = BitShiftUp(whitePawnsStayed) and emptySquares()
+        val whitePawnsStayedMoveTwo = BitShiftUp(whitePawnsStayedMoveOne) and emptySquares()
         val whitePawnsStayedMoveTwoMoves = OneBitSet(whitePawnsStayedMoveTwo)
         for (move in whitePawnsStayedMoveTwoMoves) {
-            val originalSquare = move shr 16
+            val originalSquare = BitShiftDown(move, 2)
             val newWhitePawns = (whitePawns and originalSquare.inv()) or move
 
             val newWhiteTurn = !whiteTurn
             val newPieceStayed = pieceStayed and originalSquare.inv() and move.inv()
-            val newEnPassantSquare = 0uL
+
+            var newEnPassantSquare = 0uL
+            val blackPawnCheck = blackPawns and (BitShiftLeft(move) or BitShiftRight(move))
+            if (blackPawnCheck.countOneBits() > 0) {
+                newEnPassantSquare = BitShiftDown(move)
+            }
+
             val newBoard = this.copy(
                 whitePawns = newWhitePawns,
 
