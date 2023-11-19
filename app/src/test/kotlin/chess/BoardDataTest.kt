@@ -789,5 +789,143 @@ class BoardDataTest {
         )
         assertEquals(expected, actual)
     }
+
+    @Test fun boardDataPawnMovesPromotion() {
+        val boardData = BoardData(
+            whitePawns = BoardData.UByteToULong(listOf<UByte>(
+                0b00000000u,
+                0b10000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+            )),
+        )
+
+        val actual = boardData.pawnMoves()
+        val expected = setOf(
+            BoardData(
+                whiteKnights = BoardData.UByteToULong(listOf<UByte>(
+                    0b10000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                )),
+
+                whiteTurn = false,
+            ),
+            BoardData(
+                whiteBishops = BoardData.UByteToULong(listOf<UByte>(
+                    0b10000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                )),
+
+                whiteTurn = false,
+            ),
+            BoardData(
+                whiteRooks = BoardData.UByteToULong(listOf<UByte>(
+                    0b10000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                )),
+
+                whiteTurn = false,
+            ),
+            BoardData(
+                whiteQueens = BoardData.UByteToULong(listOf<UByte>(
+                    0b10000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                )),
+
+                whiteTurn = false,
+            ),
+        )
+        assertEquals(expected, actual)
+    }
+
+    // This is impossible in a regular game, so I don't handle promotions like this
+    @Test fun boardDataPawnMovesTwoMovePromotion() {
+        val boardData = BoardData(
+            whitePawns = BoardData.UByteToULong(listOf<UByte>(
+                0b00000000u,
+                0b00000000u,
+                0b10000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+            )),
+
+            pieceStayed = BoardData.UByteToULong(listOf<UByte>(
+                0b00000000u,
+                0b00000000u,
+                0b10000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+            )),
+        )
+
+        val actual = boardData.pawnMoves()
+        val expected = setOf(
+            BoardData(
+                whitePawns = BoardData.UByteToULong(listOf<UByte>(
+                    0b10000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                )),
+
+                pieceStayed = 0uL,
+                whiteTurn = false,
+            ),
+            BoardData(
+                whitePawns = BoardData.UByteToULong(listOf<UByte>(
+                    0b00000000u,
+                    0b10000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                )),
+
+                pieceStayed = 0uL,
+                whiteTurn = false,
+            ),
+        )
+        assertEquals(expected, actual)
+    }
 }
 

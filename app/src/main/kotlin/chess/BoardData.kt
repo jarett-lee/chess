@@ -71,6 +71,10 @@ data class BoardData(
             // 0b11111110 0xFE
             return (num and 0xFEFEFEFEFEFEFEFEuL) shr 1
         }
+
+        fun ULongToHexString(num: ULong, prefix: String = "0x"): String {
+            return "$prefix${num.toString(16).padStart(16, '0')}"
+        }
     }
 
     fun whitePieces(): ULong {
@@ -96,19 +100,39 @@ data class BoardData(
         val whitePawnsMoveOneMoves = OneBitSet(whitePawnsMoveOne)
         for (move in whitePawnsMoveOneMoves) {
             val originalSquare = BitShiftDown(move)
-            val newWhitePawns = (whitePawns and originalSquare.inv()) or move
 
             val newWhiteTurn = !whiteTurn
             val newPieceStayed = pieceStayed and originalSquare.inv() and move.inv()
             val newEnPassantSquare = 0uL
-            val newBoard = this.copy(
-                whitePawns = newWhitePawns,
 
-                whiteTurn = newWhiteTurn,
-                pieceStayed = newPieceStayed,
-                enPassantSquare = newEnPassantSquare,
-            )
-            boards.add(newBoard)
+            val promotion = (move and 0xFF00000000000000uL).countOneBits() > 0
+            if (promotion) {
+                val newWhitePawns = (whitePawns and originalSquare.inv())
+
+                val newBoard = this.copy(
+                    whitePawns = newWhitePawns,
+
+                    whiteTurn = newWhiteTurn,
+                    pieceStayed = newPieceStayed,
+                    enPassantSquare = newEnPassantSquare,
+                )
+
+                boards.add(newBoard.copy(whiteKnights = whiteKnights or move))
+                boards.add(newBoard.copy(whiteBishops = whiteBishops or move))
+                boards.add(newBoard.copy(whiteRooks = whiteRooks or move))
+                boards.add(newBoard.copy(whiteQueens = whiteQueens or move))
+            } else {
+                val newWhitePawns = (whitePawns and originalSquare.inv()) or move
+
+                val newBoard = this.copy(
+                    whitePawns = newWhitePawns,
+
+                    whiteTurn = newWhiteTurn,
+                    pieceStayed = newPieceStayed,
+                    enPassantSquare = newEnPassantSquare,
+                )
+                boards.add(newBoard)
+            }
         }
 
         val whitePawnsStayed = whitePawns and pieceStayed
@@ -139,5 +163,30 @@ data class BoardData(
         }
 
         return boards
+    }
+
+    // BoardData(whitePawns=0, whiteKnights=0, whiteBishops=0, whiteRooks=0, whiteQueens=0, whiteKings=0, blackPawns=0, blackKnights=0, blackBishops=0, blackRooks=0, blackQueens=0, blackKings=0, whiteTurn=false, pieceStayed=0, enPassantSquare=0)
+    override fun toString(): String {
+        val attributes = listOf(
+            Pair("whitePawns", whitePawns),
+            Pair("whiteKnights", whiteKnights),
+            Pair("whiteBishops", whiteBishops),
+            Pair("whiteRooks", whiteRooks),
+            Pair("whiteQueens", whiteQueens),
+            Pair("whiteKings", whiteKings),
+            Pair("blackPawns", blackPawns),
+            Pair("blackKnights", blackKnights),
+            Pair("blackBishops", blackBishops),
+            Pair("blackRooks", blackRooks),
+            Pair("blackQueens", blackQueens),
+            Pair("blackKings", blackKings),
+            Pair("pieceStayed", pieceStayed),
+            Pair("enPassantSquare", enPassantSquare),
+        )
+        val nonZeroAttributes = attributes.filter { it.second != 0uL }
+        val nonZeroAttributeStrings = nonZeroAttributes.map { "${it.first}=${ULongToHexString(it.second)}" }
+        val attributeString = nonZeroAttributeStrings.joinToString()
+
+        return "BoardData($attributeString, whiteTurn=$whiteTurn)"
     }
 }
