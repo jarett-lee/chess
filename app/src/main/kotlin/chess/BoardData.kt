@@ -189,4 +189,120 @@ data class BoardData(
 
         return "BoardData($attributeString, whiteTurn=$whiteTurn)"
     }
+
+    fun pawnCaptures(): Set<BoardData> {
+        val boards = mutableSetOf<BoardData>()
+
+        val whitePawnsLeftCapture = BitShiftLeft(BitShiftUp(whitePawns)) and (blackPieces() or enPassantSquare)
+        val whitePawnsLeftCaptureMoves = OneBitSet(whitePawnsLeftCapture)
+        for (move in whitePawnsLeftCaptureMoves) {
+            val originalSquare = BitShiftDown(BitShiftRight(move))
+
+            val newBlackPawns = blackPawns and move.inv()
+            val newBlackKnights = blackKnights and move.inv()
+            val newBlackBishops = blackBishops and move.inv()
+            val newBlackRooks = blackRooks and move.inv()
+            val newBlackQueens = blackQueens and move.inv()
+
+            val newWhiteTurn = !whiteTurn
+            val newPieceStayed = pieceStayed and originalSquare.inv() and move.inv()
+            val newEnPassantSquare = 0uL
+
+            val promotion = (move and 0xFF00000000000000uL).countOneBits() > 0
+            if (promotion) {
+                val newWhitePawns = (whitePawns and originalSquare.inv())
+
+                val newBoard = this.copy(
+                    whitePawns = newWhitePawns,
+                    blackPawns = newBlackPawns,
+                    blackKnights = newBlackKnights,
+                    blackBishops = newBlackBishops,
+                    blackRooks = newBlackRooks,
+                    blackQueens = newBlackQueens,
+
+                    whiteTurn = newWhiteTurn,
+                    pieceStayed = newPieceStayed,
+                    enPassantSquare = newEnPassantSquare,
+                )
+
+                boards.add(newBoard.copy(whiteKnights = whiteKnights or move))
+                boards.add(newBoard.copy(whiteBishops = whiteBishops or move))
+                boards.add(newBoard.copy(whiteRooks = whiteRooks or move))
+                boards.add(newBoard.copy(whiteQueens = whiteQueens or move))
+            } else {
+                val newWhitePawns = (whitePawns and originalSquare.inv()) or move
+
+                val newBoard = this.copy(
+                    whitePawns = newWhitePawns,
+                    blackPawns = newBlackPawns,
+                    blackKnights = newBlackKnights,
+                    blackBishops = newBlackBishops,
+                    blackRooks = newBlackRooks,
+                    blackQueens = newBlackQueens,
+
+                    whiteTurn = newWhiteTurn,
+                    pieceStayed = newPieceStayed,
+                    enPassantSquare = newEnPassantSquare,
+                )
+                boards.add(newBoard)
+            }
+        }
+
+        val whitePawnsRightCapture = BitShiftRight(BitShiftUp(whitePawns)) and (blackPieces() or enPassantSquare)
+        val whitePawnsRightCaptureMoves = OneBitSet(whitePawnsRightCapture)
+        for (move in whitePawnsRightCaptureMoves) {
+            val originalSquare = BitShiftDown(BitShiftLeft(move))
+
+            val newBlackPawns = blackPawns and move.inv()
+            val newBlackKnights = blackKnights and move.inv()
+            val newBlackBishops = blackBishops and move.inv()
+            val newBlackRooks = blackRooks and move.inv()
+            val newBlackQueens = blackQueens and move.inv()
+
+            val newWhiteTurn = !whiteTurn
+            val newPieceStayed = pieceStayed and originalSquare.inv() and move.inv()
+            val newEnPassantSquare = 0uL
+
+            val promotion = (move and 0xFF00000000000000uL).countOneBits() > 0
+            if (promotion) {
+                val newWhitePawns = (whitePawns and originalSquare.inv())
+
+                val newBoard = this.copy(
+                    whitePawns = newWhitePawns,
+                    blackPawns = newBlackPawns,
+                    blackKnights = newBlackKnights,
+                    blackBishops = newBlackBishops,
+                    blackRooks = newBlackRooks,
+                    blackQueens = newBlackQueens,
+
+                    whiteTurn = newWhiteTurn,
+                    pieceStayed = newPieceStayed,
+                    enPassantSquare = newEnPassantSquare,
+                )
+
+                boards.add(newBoard.copy(whiteKnights = whiteKnights or move))
+                boards.add(newBoard.copy(whiteBishops = whiteBishops or move))
+                boards.add(newBoard.copy(whiteRooks = whiteRooks or move))
+                boards.add(newBoard.copy(whiteQueens = whiteQueens or move))
+            } else {
+                val newWhitePawns = (whitePawns and originalSquare.inv()) or move
+
+                val newBoard = this.copy(
+                    whitePawns = newWhitePawns,
+                    blackPawns = newBlackPawns,
+                    blackKnights = newBlackKnights,
+                    blackBishops = newBlackBishops,
+                    blackRooks = newBlackRooks,
+                    blackQueens = newBlackQueens,
+
+                    whiteTurn = newWhiteTurn,
+                    pieceStayed = newPieceStayed,
+                    enPassantSquare = newEnPassantSquare,
+                )
+                boards.add(newBoard)
+            }
+        }
+
+        return boards
+    }
 }
