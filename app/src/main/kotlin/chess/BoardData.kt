@@ -18,65 +18,6 @@ data class BoardData(
     val pieceStayed: ULong = 0uL,
     val enPassantSquare: ULong = 0uL,
 ) {
-    companion object {
-        fun UByteToULong(nums: List<UByte>): ULong {
-            if (nums.size != 8) {
-                throw IllegalArgumentException("array of size 8 required")
-            }
-
-            var out = 0uL
-            for (num in nums) {
-                out = out shl 8
-                out = out or num.toULong()
-            }
-            return out
-        }
-
-        fun ULongToUByte(num: ULong): List<UByte> {
-            var window = num
-            val out = mutableListOf<UByte>()
-            for (i in 0..<8) {
-                out.add(window.toUByte())
-                window = window shr 8
-            }
-
-            return out.asReversed()
-        }
-
-        fun OneBitSet(num: ULong): Set<ULong> {
-            val moves: MutableSet<ULong> = mutableSetOf<ULong>()
-            for (i in 0..<64) {
-                val mask = 1uL shl i
-                if ((mask and num) > 0uL) {
-                    moves.add(mask)
-                }
-            }
-            return moves
-        }
-
-        fun BitShiftUp(num: ULong, by: Int = 1): ULong {
-            return num shl (8 * by)
-        }
-
-        fun BitShiftDown(num: ULong, by: Int = 1): ULong {
-            return num shr (8 * by)
-        }
-
-        fun BitShiftLeft(num: ULong): ULong {
-            // 0b01111111 = 0x7F
-            return (num and 0x7F7F7F7F7F7F7F7FuL) shl 1
-        }
-
-        fun BitShiftRight(num: ULong): ULong {
-            // 0b11111110 0xFE
-            return (num and 0xFEFEFEFEFEFEFEFEuL) shr 1
-        }
-
-        fun ULongToHexString(num: ULong, prefix: String = "0x"): String {
-            return "$prefix${num.toString(16).padStart(16, '0')}"
-        }
-    }
-
     fun whitePieces(): ULong {
         return whitePawns or whiteKnights or whiteBishops or whiteRooks or whiteKings
     }
@@ -96,10 +37,10 @@ data class BoardData(
     fun pawnMoves(): Set<BoardData> {
         val boards = mutableSetOf<BoardData>()
 
-        val whitePawnsMoveOne = BitShiftUp(whitePawns) and emptySquares()
-        val whitePawnsMoveOneMoves = OneBitSet(whitePawnsMoveOne)
+        val whitePawnsMoveOne = BitUtils.bitShiftUp(whitePawns) and emptySquares()
+        val whitePawnsMoveOneMoves = BitUtils.oneBitsToSet(whitePawnsMoveOne)
         for (move in whitePawnsMoveOneMoves) {
-            val originalSquare = BitShiftDown(move)
+            val originalSquare = BitUtils.bitShiftDown(move)
 
             val newWhiteTurn = !whiteTurn
             val newPieceStayed = pieceStayed and originalSquare.inv() and move.inv()
@@ -136,20 +77,20 @@ data class BoardData(
         }
 
         val whitePawnsStayed = whitePawns and pieceStayed
-        val whitePawnsStayedMoveOne = BitShiftUp(whitePawnsStayed) and emptySquares()
-        val whitePawnsStayedMoveTwo = BitShiftUp(whitePawnsStayedMoveOne) and emptySquares()
-        val whitePawnsStayedMoveTwoMoves = OneBitSet(whitePawnsStayedMoveTwo)
+        val whitePawnsStayedMoveOne = BitUtils.bitShiftUp(whitePawnsStayed) and emptySquares()
+        val whitePawnsStayedMoveTwo = BitUtils.bitShiftUp(whitePawnsStayedMoveOne) and emptySquares()
+        val whitePawnsStayedMoveTwoMoves = BitUtils.oneBitsToSet(whitePawnsStayedMoveTwo)
         for (move in whitePawnsStayedMoveTwoMoves) {
-            val originalSquare = BitShiftDown(move, 2)
+            val originalSquare = BitUtils.bitShiftDown(move, 2)
             val newWhitePawns = (whitePawns and originalSquare.inv()) or move
 
             val newWhiteTurn = !whiteTurn
             val newPieceStayed = pieceStayed and originalSquare.inv() and move.inv()
 
             var newEnPassantSquare = 0uL
-            val blackPawnCheck = blackPawns and (BitShiftLeft(move) or BitShiftRight(move))
+            val blackPawnCheck = blackPawns and (BitUtils.bitShiftLeft(move) or BitUtils.bitShiftRight(move))
             if (blackPawnCheck.countOneBits() > 0) {
-                newEnPassantSquare = BitShiftDown(move)
+                newEnPassantSquare = BitUtils.bitShiftDown(move)
             }
 
             val newBoard = this.copy(
@@ -184,7 +125,7 @@ data class BoardData(
             Pair("enPassantSquare", enPassantSquare),
         )
         val nonZeroAttributes = attributes.filter { it.second != 0uL }
-        val nonZeroAttributeStrings = nonZeroAttributes.map { "${it.first}=${ULongToHexString(it.second)}" }
+        val nonZeroAttributeStrings = nonZeroAttributes.map { "${it.first}=${BitUtils.uLongToHexString(it.second)}" }
         val attributeString = nonZeroAttributeStrings.joinToString()
 
         return "BoardData($attributeString, whiteTurn=$whiteTurn)"
@@ -193,14 +134,14 @@ data class BoardData(
     fun pawnCaptures(): Set<BoardData> {
         val boards = mutableSetOf<BoardData>()
 
-        val whitePawnsLeftCapture = BitShiftLeft(BitShiftUp(whitePawns)) and (blackPieces() or enPassantSquare)
-        val whitePawnsLeftCaptureMoves = OneBitSet(whitePawnsLeftCapture)
+        val whitePawnsLeftCapture = BitUtils.bitShiftLeft(BitUtils.bitShiftUp(whitePawns)) and (blackPieces() or enPassantSquare)
+        val whitePawnsLeftCaptureMoves = BitUtils.oneBitsToSet(whitePawnsLeftCapture)
         for (move in whitePawnsLeftCaptureMoves) {
-            val originalSquare = BitShiftDown(BitShiftRight(move))
+            val originalSquare = BitUtils.bitShiftDown(BitUtils.bitShiftRight(move))
 
             var pawnLocation = move
             if ((move and enPassantSquare).countOneBits() > 0) {
-                pawnLocation = BitShiftDown(enPassantSquare)
+                pawnLocation = BitUtils.bitShiftDown(enPassantSquare)
             }
 
             val newBlackPawns = blackPawns and pawnLocation.inv()
@@ -253,14 +194,14 @@ data class BoardData(
             }
         }
 
-        val whitePawnsRightCapture = BitShiftRight(BitShiftUp(whitePawns)) and (blackPieces() or enPassantSquare)
-        val whitePawnsRightCaptureMoves = OneBitSet(whitePawnsRightCapture)
+        val whitePawnsRightCapture = BitUtils.bitShiftRight(BitUtils.bitShiftUp(whitePawns)) and (blackPieces() or enPassantSquare)
+        val whitePawnsRightCaptureMoves = BitUtils.oneBitsToSet(whitePawnsRightCapture)
         for (move in whitePawnsRightCaptureMoves) {
-            val originalSquare = BitShiftDown(BitShiftLeft(move))
+            val originalSquare = BitUtils.bitShiftDown(BitUtils.bitShiftLeft(move))
 
             var pawnLocation = move
             if ((move and enPassantSquare).countOneBits() > 0) {
-                pawnLocation = BitShiftDown(enPassantSquare)
+                pawnLocation = BitUtils.bitShiftDown(enPassantSquare)
             }
 
             val newBlackPawns = blackPawns and pawnLocation.inv()
