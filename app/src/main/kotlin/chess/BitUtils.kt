@@ -14,6 +14,19 @@ object BitUtils {
         return out
     }
 
+    fun uBytesToULong(num1: UByte, num2: UByte, num3: UByte, num4: UByte, num5: UByte, num6: UByte, num7: UByte, num8: UByte): ULong {
+        val out =
+            (num1.toULong() shl 56) or
+            (num2.toULong() shl 48) or
+            (num3.toULong() shl 40) or
+            (num4.toULong() shl 32) or
+            (num5.toULong() shl 24) or
+            (num6.toULong() shl 16) or
+            (num7.toULong() shl 8) or
+            (num8.toULong())
+        return out
+    }
+
     fun uLongToUBytes(num: ULong): List<UByte> {
         var window = num
         val out = mutableListOf<UByte>()

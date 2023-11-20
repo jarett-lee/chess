@@ -5,7 +5,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class BitUtilsTest {
-    @Test fun boardDataUBytesToULongSuccess() {
+    @Test fun uBytesToULongSuccess() {
         val actual = BitUtils.uBytesToULong(listOf<UByte>(
             0b10000000u,
             0b00100001u,
@@ -16,6 +16,21 @@ class BitUtilsTest {
             0b10000100u,
             0b00000001u,
         ))
+        val expected = 0b1000000000100001010000000000100000010000000000101000010000000001uL
+        assertEquals(expected, actual)
+    }
+
+    @Test fun uBytesToULongDirect() {
+        val actual = BitUtils.uBytesToULong(
+            0b10000000u,
+            0b00100001u,
+            0b01000000u,
+            0b00001000u,
+            0b00010000u,
+            0b00000010u,
+            0b10000100u,
+            0b00000001u,
+        )
         val expected = 0b1000000000100001010000000000100000010000000000101000010000000001uL
         assertEquals(expected, actual)
     }
@@ -100,7 +115,7 @@ class BitUtilsTest {
     }
 
     @Test fun boardDataBitShiftUp() {
-        val actual = BitUtils.bitShiftUp(BitUtils.uBytesToULong(listOf<UByte>(
+        val actual = BitUtils.bitShiftUp(BitUtils.uBytesToULong(
             0b01000001u,
             0b00000000u,
             0b00010000u,
@@ -109,8 +124,8 @@ class BitUtilsTest {
             0b00000000u,
             0b00000001u,
             0b10000000u,
-        )))
-        val expected = BitUtils.uBytesToULong(listOf<UByte>(
+        ))
+        val expected = BitUtils.uBytesToULong(
             0b00000000u,
             0b00010000u,
             0b10000000u,
@@ -119,12 +134,12 @@ class BitUtilsTest {
             0b00000001u,
             0b10000000u,
             0b00000000u,
-        ))
+        )
         assertEquals(expected, actual)
     }
 
     @Test fun boardDataBitShiftDown() {
-        val actual = BitUtils.bitShiftDown(BitUtils.uBytesToULong(listOf<UByte>(
+        val actual = BitUtils.bitShiftDown(BitUtils.uBytesToULong(
             0b01000001u,
             0b00000000u,
             0b00010000u,
@@ -133,22 +148,22 @@ class BitUtilsTest {
             0b00000000u,
             0b00000001u,
             0b10000000u,
-        )))
-        val expected = BitUtils.uBytesToULong(listOf<UByte>(
-            0b00000000u,
-            0b01000001u,
-            0b00000000u,
-            0b00010000u,
-            0b10000000u,
-            0b00000100u,
-            0b00000000u,
-            0b00000001u,
         ))
+        val expected = BitUtils.uBytesToULong(
+            0b00000000u,
+            0b01000001u,
+            0b00000000u,
+            0b00010000u,
+            0b10000000u,
+            0b00000100u,
+            0b00000000u,
+            0b00000001u,
+        )
         assertEquals(expected, actual)
     }
 
     @Test fun boardDataBitShiftUp2() {
-        val actual = BitUtils.bitShiftUp(BitUtils.uBytesToULong(listOf<UByte>(
+        val actual = BitUtils.bitShiftUp(BitUtils.uBytesToULong(
             0b01000001u,
             0b00000000u,
             0b00010000u,
@@ -157,8 +172,8 @@ class BitUtilsTest {
             0b00000000u,
             0b00000001u,
             0b10000000u,
-        )), 2)
-        val expected = BitUtils.uBytesToULong(listOf<UByte>(
+        ), 2)
+        val expected = BitUtils.uBytesToULong(
             0b00010000u,
             0b10000000u,
             0b00000100u,
@@ -167,12 +182,12 @@ class BitUtilsTest {
             0b10000000u,
             0b00000000u,
             0b00000000u,
-        ))
+        )
         assertEquals(expected, actual)
     }
 
     @Test fun boardDataBitShiftDown2() {
-        val actual = BitUtils.bitShiftDown(BitUtils.uBytesToULong(listOf<UByte>(
+        val actual = BitUtils.bitShiftDown(BitUtils.uBytesToULong(
             0b01000001u,
             0b00000000u,
             0b00010000u,
@@ -181,8 +196,8 @@ class BitUtilsTest {
             0b00000000u,
             0b00000001u,
             0b10000000u,
-        )), 2)
-        val expected = BitUtils.uBytesToULong(listOf<UByte>(
+        ), 2)
+        val expected = BitUtils.uBytesToULong(
             0b00000000u,
             0b00000000u,
             0b01000001u,
@@ -191,12 +206,12 @@ class BitUtilsTest {
             0b10000000u,
             0b00000100u,
             0b00000000u,
-        ))
+        )
         assertEquals(expected, actual)
     }
 
     @Test fun boardDataBitShiftLeft() {
-        val actual = BitUtils.bitShiftLeft(BitUtils.uBytesToULong(listOf<UByte>(
+        val actual = BitUtils.bitShiftLeft(BitUtils.uBytesToULong(
             0b01000001u,
             0b00000000u,
             0b00010000u,
@@ -205,8 +220,8 @@ class BitUtilsTest {
             0b00000000u,
             0b00000001u,
             0b10000000u,
-        )))
-        val expected = BitUtils.uBytesToULong(listOf<UByte>(
+        ))
+        val expected = BitUtils.uBytesToULong(
             0b10000010u,
             0b00000000u,
             0b00100000u,
@@ -215,12 +230,12 @@ class BitUtilsTest {
             0b00000000u,
             0b00000010u,
             0b00000000u,
-        ))
+        )
         assertEquals(expected, actual)
     }
 
     @Test fun boardDataBitShiftRight() {
-        val actual = BitUtils.bitShiftRight(BitUtils.uBytesToULong(listOf<UByte>(
+        val actual = BitUtils.bitShiftRight(BitUtils.uBytesToULong(
             0b01000001u,
             0b00000000u,
             0b00010000u,
@@ -229,8 +244,8 @@ class BitUtilsTest {
             0b00000000u,
             0b00000001u,
             0b10000000u,
-        )))
-        val expected = BitUtils.uBytesToULong(listOf<UByte>(
+        ))
+        val expected = BitUtils.uBytesToULong(
             0b00100000u,
             0b00000000u,
             0b00001000u,
@@ -239,7 +254,7 @@ class BitUtilsTest {
             0b00000000u,
             0b00000000u,
             0b01000000u,
-        ))
+        )
         assertEquals(expected, actual)
     }
 }
