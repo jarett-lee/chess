@@ -628,7 +628,6 @@ class BoardDataTest {
         assertEquals(expected, actual)
     }
 
-    // This is impossible in a regular game, so I don't handle promotions like this
     @Test fun boardDataPawnMovesTwoMovePromotion() {
         val boardData = BoardData(
             whitePawns = BitUtils.uBytesToULong(
@@ -658,8 +657,8 @@ class BoardDataTest {
         val expected = setOf(
             BoardData(
                 whitePawns = BitUtils.uBytesToULong(
-                    0b10000000u,
                     0b00000000u,
+                    0b10000000u,
                     0b00000000u,
                     0b00000000u,
                     0b00000000u,
@@ -672,9 +671,9 @@ class BoardDataTest {
                 whiteTurn = false,
             ),
             BoardData(
-                whitePawns = BitUtils.uBytesToULong(
-                    0b00000000u,
+                whiteKnights = BitUtils.uBytesToULong(
                     0b10000000u,
+                    0b00000000u,
                     0b00000000u,
                     0b00000000u,
                     0b00000000u,
@@ -683,7 +682,48 @@ class BoardDataTest {
                     0b00000000u,
                 ),
 
-                pieceStayed = 0uL,
+                whiteTurn = false,
+            ),
+            BoardData(
+                whiteBishops = BitUtils.uBytesToULong(
+                    0b10000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                ),
+
+                whiteTurn = false,
+            ),
+            BoardData(
+                whiteRooks = BitUtils.uBytesToULong(
+                    0b10000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                ),
+
+                whiteTurn = false,
+            ),
+            BoardData(
+                whiteQueens = BitUtils.uBytesToULong(
+                    0b10000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                ),
+
                 whiteTurn = false,
             ),
         )

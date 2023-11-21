@@ -40,40 +40,7 @@ data class BoardData(
         val whitePawnsMoveOne = BitUtils.bitShiftUp(whitePawns) and emptySquares()
         val whitePawnsMoveOneMoves = BitUtils.oneBitsToSet(whitePawnsMoveOne)
         for (move in whitePawnsMoveOneMoves) {
-            val originalSquare = BitUtils.bitShiftDown(move)
-
-            val newWhiteTurn = !whiteTurn
-            val newPieceStayed = pieceStayed and originalSquare.inv() and move.inv()
-            val newEnPassantSquare = 0uL
-
-            val promotion = (move and 0xFF00000000000000uL).countOneBits() > 0
-            if (promotion) {
-                val newWhitePawns = (whitePawns and originalSquare.inv())
-
-                val newBoard = this.copy(
-                    whitePawns = newWhitePawns,
-
-                    whiteTurn = newWhiteTurn,
-                    pieceStayed = newPieceStayed,
-                    enPassantSquare = newEnPassantSquare,
-                )
-
-                boards.add(newBoard.copy(whiteKnights = whiteKnights or move))
-                boards.add(newBoard.copy(whiteBishops = whiteBishops or move))
-                boards.add(newBoard.copy(whiteRooks = whiteRooks or move))
-                boards.add(newBoard.copy(whiteQueens = whiteQueens or move))
-            } else {
-                val newWhitePawns = (whitePawns and originalSquare.inv()) or move
-
-                val newBoard = this.copy(
-                    whitePawns = newWhitePawns,
-
-                    whiteTurn = newWhiteTurn,
-                    pieceStayed = newPieceStayed,
-                    enPassantSquare = newEnPassantSquare,
-                )
-                boards.add(newBoard)
-            }
+            addPawnMovesToBoard(boards, move, BitUtils::bitShiftDown)
         }
 
         val whitePawnsStayed = whitePawns and pieceStayed
@@ -81,26 +48,7 @@ data class BoardData(
         val whitePawnsStayedMoveTwo = BitUtils.bitShiftUp(whitePawnsStayedMoveOne) and emptySquares()
         val whitePawnsStayedMoveTwoMoves = BitUtils.oneBitsToSet(whitePawnsStayedMoveTwo)
         for (move in whitePawnsStayedMoveTwoMoves) {
-            val originalSquare = BitUtils.bitShiftDown(move, 2)
-            val newWhitePawns = (whitePawns and originalSquare.inv()) or move
-
-            val newWhiteTurn = !whiteTurn
-            val newPieceStayed = pieceStayed and originalSquare.inv() and move.inv()
-
-            var newEnPassantSquare = 0uL
-            val blackPawnCheck = blackPawns and (BitUtils.bitShiftLeft(move) or BitUtils.bitShiftRight(move))
-            if (blackPawnCheck.countOneBits() > 0) {
-                newEnPassantSquare = BitUtils.bitShiftDown(move)
-            }
-
-            val newBoard = this.copy(
-                whitePawns = newWhitePawns,
-
-                whiteTurn = newWhiteTurn,
-                pieceStayed = newPieceStayed,
-                enPassantSquare = newEnPassantSquare,
-            )
-            boards.add(newBoard)
+            addPawnMovesToBoard(boards, move, { bits -> BitUtils.bitShiftDown(bits, 2) }, checkEnPassant = true)
         }
 
         return boards
@@ -149,23 +97,17 @@ data class BoardData(
         return boards
     }
 
-    fun addPawnCapturesToBoard(boards: MutableSet<BoardData>, move: ULong, findOriginalSquare: (input: ULong) -> ULong) {
+    fun addPawnMovesToBoard(boards: MutableSet<BoardData>, move: ULong, findOriginalSquare: (input: ULong) -> ULong, checkEnPassant: Boolean = false) {
         val originalSquare = findOriginalSquare(move)
-
-        var pawnLocation = move
-        if ((move and enPassantSquare).countOneBits() > 0) {
-            pawnLocation = BitUtils.bitShiftDown(enPassantSquare)
-        }
-
-        val newBlackPawns = blackPawns and pawnLocation.inv()
-        val newBlackKnights = blackKnights and pawnLocation.inv()
-        val newBlackBishops = blackBishops and pawnLocation.inv()
-        val newBlackRooks = blackRooks and pawnLocation.inv()
-        val newBlackQueens = blackQueens and pawnLocation.inv()
 
         val newWhiteTurn = !whiteTurn
         val newPieceStayed = pieceStayed and originalSquare.inv() and move.inv()
-        val newEnPassantSquare = 0uL
+
+        var newEnPassantSquare = 0uL
+        val blackPawnCheck = blackPawns and (BitUtils.bitShiftLeft(move) or BitUtils.bitShiftRight(move))
+        if (checkEnPassant && blackPawnCheck.countOneBits() > 0) {
+            newEnPassantSquare = BitUtils.bitShiftDown(move)
+        }
 
         val promotion = (move and 0xFF00000000000000uL).countOneBits() > 0
         if (promotion) {
@@ -173,11 +115,6 @@ data class BoardData(
 
             val newBoard = this.copy(
                 whitePawns = newWhitePawns,
-                blackPawns = newBlackPawns,
-                blackKnights = newBlackKnights,
-                blackBishops = newBlackBishops,
-                blackRooks = newBlackRooks,
-                blackQueens = newBlackQueens,
 
                 whiteTurn = newWhiteTurn,
                 pieceStayed = newPieceStayed,
@@ -193,11 +130,6 @@ data class BoardData(
 
             val newBoard = this.copy(
                 whitePawns = newWhitePawns,
-                blackPawns = newBlackPawns,
-                blackKnights = newBlackKnights,
-                blackBishops = newBlackBishops,
-                blackRooks = newBlackRooks,
-                blackQueens = newBlackQueens,
 
                 whiteTurn = newWhiteTurn,
                 pieceStayed = newPieceStayed,
@@ -205,5 +137,28 @@ data class BoardData(
             )
             boards.add(newBoard)
         }
+    }
+
+    fun addPawnCapturesToBoard(boards: MutableSet<BoardData>, move: ULong, findOriginalSquare: (input: ULong) -> ULong) {
+        var pawnLocation = move
+        if ((move and enPassantSquare).countOneBits() > 0) {
+            pawnLocation = BitUtils.bitShiftDown(enPassantSquare)
+        }
+
+        val newBlackPawns = blackPawns and pawnLocation.inv()
+        val newBlackKnights = blackKnights and pawnLocation.inv()
+        val newBlackBishops = blackBishops and pawnLocation.inv()
+        val newBlackRooks = blackRooks and pawnLocation.inv()
+        val newBlackQueens = blackQueens and pawnLocation.inv()
+
+        val newBoard = this.copy(
+            blackPawns = newBlackPawns,
+            blackKnights = newBlackKnights,
+            blackBishops = newBlackBishops,
+            blackRooks = newBlackRooks,
+            blackQueens = newBlackQueens,
+        )
+
+        newBoard.addPawnMovesToBoard(boards, move, findOriginalSquare)
     }
 }
