@@ -62,9 +62,19 @@ object BitUtils {
         return (num and 0x7F7F7F7F7F7F7F7FuL) shl 1
     }
 
+    fun bitShiftLeft2(num: ULong): ULong {
+        // 0b00111111 = 0x3F
+        return (num and 0x3F3F3F3F3F3F3F3FuL) shl 2
+    }
+
     fun bitShiftRight(num: ULong): ULong {
         // 0b11111110 0xFE
         return (num and 0xFEFEFEFEFEFEFEFEuL) shr 1
+    }
+
+    fun bitShiftRight2(num: ULong): ULong {
+        // 0b11111100 0xFC
+        return (num and 0xFCFCFCFCFCFCFCFCuL) shr 2
     }
 
     fun uLongToHexString(num: ULong, prefix: String = "0x"): String {
