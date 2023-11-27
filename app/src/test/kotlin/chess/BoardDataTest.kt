@@ -2,7 +2,6 @@ package chess
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 
 class BoardDataTest {
     @Test fun boardDataPawnMovesOne() {

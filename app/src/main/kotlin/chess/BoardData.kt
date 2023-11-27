@@ -41,7 +41,7 @@ data class BoardData(
         val whitePawnsMoveOneMoves = BitUtils.oneBitsToSet(whitePawnsMoveOne)
         for (move in whitePawnsMoveOneMoves) {
             val originalSquare = BitUtils.bitShiftDown(move)
-            val newBoards = pawnMoveBoard(move, originalSquare)
+            val newBoards = pawnMoveBoard(originalSquare, move)
             boards.addAll(newBoards)
         }
 
@@ -51,7 +51,7 @@ data class BoardData(
         val whitePawnsStayedMoveTwoMoves = BitUtils.oneBitsToSet(whitePawnsStayedMoveTwo)
         for (move in whitePawnsStayedMoveTwoMoves) {
             val originalSquare = BitUtils.bitShiftDown(move, 2)
-            val newBoards = pawnMoveBoard(move, originalSquare, checkEnPassant = true)
+            val newBoards = pawnMoveBoard(originalSquare, move, checkEnPassant = true)
             boards.addAll(newBoards)
         }
 
@@ -90,7 +90,7 @@ data class BoardData(
         val whitePawnsLeftCaptureMoves = BitUtils.oneBitsToSet(whitePawnsLeftCapture)
         for (move in whitePawnsLeftCaptureMoves) {
             val originalSquare = BitUtils.bitShiftDown(BitUtils.bitShiftRight(move))
-            val board = pawnCaptureBoard(move, originalSquare)
+            val board = pawnCaptureBoard(originalSquare, move)
             boards.addAll(board)
         }
 
@@ -98,14 +98,14 @@ data class BoardData(
         val whitePawnsRightCaptureMoves = BitUtils.oneBitsToSet(whitePawnsRightCapture)
         for (move in whitePawnsRightCaptureMoves) {
             val originalSquare = BitUtils.bitShiftDown(BitUtils.bitShiftLeft(move))
-            val board = pawnCaptureBoard(move, originalSquare)
+            val board = pawnCaptureBoard(originalSquare, move)
             boards.addAll(board)
         }
 
         return boards
     }
 
-    fun pawnMoveBoard(move: ULong, originalSquare: ULong, checkEnPassant: Boolean = false): Set<BoardData> {
+    fun pawnMoveBoard(originalSquare: ULong, move: ULong, checkEnPassant: Boolean = false): Set<BoardData> {
         val boards = mutableSetOf<BoardData>()
 
         val newWhiteTurn = !whiteTurn
@@ -167,31 +167,82 @@ data class BoardData(
         return board
     }
 
-    fun pawnCaptureBoard(move: ULong, originalSquare: ULong): Set<BoardData> {
+    fun pawnCaptureBoard(originalSquare: ULong, move: ULong): Set<BoardData> {
         var pawnLocation = move
         if ((move and enPassantSquare).countOneBits() > 0) {
             pawnLocation = BitUtils.bitShiftDown(enPassantSquare)
         }
 
         val newBoard = captureBlack(pawnLocation)
-        return newBoard.pawnMoveBoard(move, originalSquare)
+        return newBoard.pawnMoveBoard(originalSquare, move)
     }
 
-    fun knightCaptureBoard(move: ULong, originalSquare: ULong): BoardData {
+    fun knightCaptureBoard(originalSquare: ULong, move: ULong): BoardData {
         val newBoard = captureBlack(move)
-        return newBoard.knightMoveBoard(move, originalSquare)
+        return newBoard.knightMoveBoard(originalSquare, move)
     }
 
-    fun knightMoveBoard(move: ULong, originalSquare: ULong): BoardData {
+    fun knightMoveBoard(originalSquare: ULong, move: ULong): BoardData {
+        val newWhiteKnights = (whiteKnights and originalSquare.inv()) or move
+
+        val newBoard = regularMoveBoard(originalSquare, move).copy(
+            whiteKnights = newWhiteKnights,
+        )
+
+        return newBoard
+    }
+
+    fun rookCaptureBoard(originalSquare: ULong, move: ULong): BoardData {
+        val newBoard = captureBlack(move)
+        return newBoard.rookMoveBoard(originalSquare, move)
+    }
+
+    fun rookMoveBoard(originalSquare: ULong, move: ULong): BoardData {
+        val newWhiteRooks = (whiteRooks and originalSquare.inv()) or move
+
+        val newBoard = regularMoveBoard(originalSquare, move).copy(
+            whiteRooks = newWhiteRooks,
+        )
+
+        return newBoard
+    }
+
+    fun queenCaptureBoard(originalSquare: ULong, move: ULong): BoardData {
+        val newBoard = captureBlack(move)
+        return newBoard.queenMoveBoard(originalSquare, move)
+    }
+
+    fun queenMoveBoard(originalSquare: ULong, move: ULong): BoardData {
+        val newWhiteQueens = (whiteQueens and originalSquare.inv()) or move
+
+        val newBoard = regularMoveBoard(originalSquare, move).copy(
+            whiteQueens = newWhiteQueens,
+        )
+
+        return newBoard
+    }
+
+    fun bishopCaptureBoard(originalSquare: ULong, move: ULong): BoardData {
+        val newBoard = captureBlack(move)
+        return newBoard.bishopMoveBoard(originalSquare, move)
+    }
+
+    fun bishopMoveBoard(originalSquare: ULong, move: ULong): BoardData {
+        val newWhiteBishops = (whiteBishops and originalSquare.inv()) or move
+
+        val newBoard = regularMoveBoard(originalSquare, move).copy(
+            whiteBishops = newWhiteBishops,
+        )
+
+        return newBoard
+    }
+
+    fun regularMoveBoard(originalSquare: ULong, move: ULong): BoardData {
         val newWhiteTurn = !whiteTurn
         val newPieceStayed = pieceStayed and originalSquare.inv() and move.inv()
         val newEnPassantSquare = 0uL
 
-        val newWhiteKnights = (whiteKnights and originalSquare.inv()) or move
-
         val newBoard = this.copy(
-            whiteKnights = newWhiteKnights,
-
             whiteTurn = newWhiteTurn,
             pieceStayed = newPieceStayed,
             enPassantSquare = newEnPassantSquare,

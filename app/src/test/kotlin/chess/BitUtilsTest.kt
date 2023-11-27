@@ -257,5 +257,80 @@ class BitUtilsTest {
         )
         assertEquals(expected, actual)
     }
+
+    @Test fun repeatUntilBlockedUp() {
+        val whiteRook = BitUtils.uBytesToULong(
+            0b00000000u,
+            0b00000000u,
+            0b00000000u,
+            0b00000000u,
+            0b00010000u,
+            0b00000000u,
+            0b00000000u,
+            0b00000000u,
+        )
+
+        val actual = BitUtils.repeatUntilBlocked(
+            whitePieces = whiteRook,
+            blackPieces = 0uL,
+            piece = whiteRook,
+            direction = BitUtils::bitShiftUp,
+        )
+        val expected = setOf(
+            Move(
+                originalSquare = whiteRook,
+                move = BitUtils.uBytesToULong(
+                    0b00010000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                ),
+            ),
+            Move(
+                originalSquare = whiteRook,
+                move = BitUtils.uBytesToULong(
+                    0b00000000u,
+                    0b00010000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                ),
+            ),
+            Move(
+                originalSquare = whiteRook,
+                move = BitUtils.uBytesToULong(
+                    0b00000000u,
+                    0b00000000u,
+                    0b00010000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                ),
+            ),
+            Move(
+                originalSquare = whiteRook,
+                move = BitUtils.uBytesToULong(
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00010000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                    0b00000000u,
+                ),
+            ),
+        )
+        assertEquals(expected, actual)
+    }
 }
 

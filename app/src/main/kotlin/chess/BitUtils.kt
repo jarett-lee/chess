@@ -80,4 +80,54 @@ object BitUtils {
     fun uLongToHexString(num: ULong, prefix: String = "0x"): String {
         return "$prefix${num.toString(16).padStart(16, '0')}"
     }
+
+    fun createMoveSet(board: BoardData, pieces: ULong, directions: Set<(num: ULong) -> ULong>): Set<Move> {
+        val moves = mutableSetOf<Move>()
+
+        val whitePieces = board.whitePieces()
+        val blackPieces = board.blackPieces()
+
+        val piecesSet = BitUtils.oneBitsToSet(pieces)
+        for (piece in piecesSet) {
+            for (direction in directions) {
+                moves.addAll(BitUtils.repeatUntilBlocked(whitePieces, blackPieces, piece, direction))
+            }
+        }
+
+        return moves
+    }
+
+    fun repeatUntilBlocked(whitePieces: ULong, blackPieces: ULong, piece: ULong, direction: (num: ULong) -> ULong): Set<Move> {
+        val moves = mutableSetOf<Move>()
+
+        var move = direction(piece)
+        while ((move != 0uL) and ((move and whitePieces.inv()) != 0uL)) {
+            moves.add(Move(
+                originalSquare = piece,
+                move = move,
+            ))
+            if ((move and blackPieces.inv()) == 0uL) {
+                break
+            }
+            move = direction(move)
+        }
+
+        return moves
+    }
+
+    fun uLongBinaryOf(moves: Set<Move>): ULongBinary {
+        var value = 0uL
+        for (move in moves) {
+            value = value or move.move
+        }
+        return ULongBinary(value)
+    }
+
+    fun uLongBinaryOf(move: Move): ULongBinary {
+        return ULongBinary(move.move)
+    }
+
+    fun uLongBinaryOf(value: ULong): ULongBinary {
+        return ULongBinary(value)
+    }
 }
