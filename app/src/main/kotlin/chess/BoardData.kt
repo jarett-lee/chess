@@ -34,30 +34,6 @@ data class BoardData(
         return pieces().inv()
     }
 
-    fun pawnMoves(): Set<BoardData> {
-        val boards = mutableSetOf<BoardData>()
-
-        val whitePawnsMoveOne = BitUtils.bitShiftUp(whitePawns) and emptySquares()
-        val whitePawnsMoveOneMoves = BitUtils.oneBitsToSet(whitePawnsMoveOne)
-        for (move in whitePawnsMoveOneMoves) {
-            val originalSquare = BitUtils.bitShiftDown(move)
-            val newBoards = pawnMoveBoard(originalSquare, move)
-            boards.addAll(newBoards)
-        }
-
-        val whitePawnsStayed = whitePawns and pieceStayed
-        val whitePawnsStayedMoveOne = BitUtils.bitShiftUp(whitePawnsStayed) and emptySquares()
-        val whitePawnsStayedMoveTwo = BitUtils.bitShiftUp(whitePawnsStayedMoveOne) and emptySquares()
-        val whitePawnsStayedMoveTwoMoves = BitUtils.oneBitsToSet(whitePawnsStayedMoveTwo)
-        for (move in whitePawnsStayedMoveTwoMoves) {
-            val originalSquare = BitUtils.bitShiftDown(move, 2)
-            val newBoards = pawnMoveBoard(originalSquare, move, checkEnPassant = true)
-            boards.addAll(newBoards)
-        }
-
-        return boards
-    }
-
     // BoardData(whitePawns=0, whiteKnights=0, whiteBishops=0, whiteRooks=0, whiteQueens=0, whiteKings=0, blackPawns=0, blackKnights=0, blackBishops=0, blackRooks=0, blackQueens=0, blackKings=0, whiteTurn=false, pieceStayed=0, enPassantSquare=0)
     override fun toString(): String {
         val attributes = listOf(
@@ -81,28 +57,6 @@ data class BoardData(
         val attributeString = nonZeroAttributeStrings.joinToString()
 
         return "BoardData($attributeString, whiteTurn=$whiteTurn)"
-    }
-
-    fun pawnCaptures(): Set<BoardData> {
-        val boards = mutableSetOf<BoardData>()
-
-        val whitePawnsLeftCapture = BitUtils.bitShiftLeft(BitUtils.bitShiftUp(whitePawns)) and (blackPieces() or enPassantSquare)
-        val whitePawnsLeftCaptureMoves = BitUtils.oneBitsToSet(whitePawnsLeftCapture)
-        for (move in whitePawnsLeftCaptureMoves) {
-            val originalSquare = BitUtils.bitShiftDown(BitUtils.bitShiftRight(move))
-            val board = pawnCaptureBoard(originalSquare, move)
-            boards.addAll(board)
-        }
-
-        val whitePawnsRightCapture = BitUtils.bitShiftRight(BitUtils.bitShiftUp(whitePawns)) and (blackPieces() or enPassantSquare)
-        val whitePawnsRightCaptureMoves = BitUtils.oneBitsToSet(whitePawnsRightCapture)
-        for (move in whitePawnsRightCaptureMoves) {
-            val originalSquare = BitUtils.bitShiftDown(BitUtils.bitShiftLeft(move))
-            val board = pawnCaptureBoard(originalSquare, move)
-            boards.addAll(board)
-        }
-
-        return boards
     }
 
     fun pawnMoveBoard(originalSquare: ULong, move: ULong, checkEnPassant: Boolean = false): Set<BoardData> {
