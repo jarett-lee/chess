@@ -82,6 +82,18 @@ object BitUtils {
         return (num and 0xF8F8F8F8F8F8F8F8uL) shr 3
     }
 
+    fun rotate180(num: ULong): ULong {
+        var out = 0uL
+        for (i in 0 ..< 64) {
+            val mask = 1uL shl i
+            if ((mask and num) > 0uL) {
+                val reverseMask = 1uL shl (63 - i)
+                out = out or reverseMask
+            }
+
+        }
+        return out
+    }
 
     fun uLongToHexString(num: ULong, prefix: String = "0x"): String {
         return "$prefix${num.toString(16).padStart(16, '0')}"

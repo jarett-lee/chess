@@ -35,6 +35,30 @@ class BitUtilsTest {
         assertEquals(expected, actual)
     }
 
+    @Test fun rotate180() {
+        val actual = BitUtils.rotate180(BitUtils.uBytesToULong(
+            0b10100000u,
+            0b10100000u,
+            0b00100000u,
+            0b00100000u,
+            0b00000000u,
+            0b00000000u,
+            0b00000010u,
+            0b00001010u,
+        ))
+        val expected = BitUtils.uBytesToULong(
+            0b01010000u,
+            0b01000000u,
+            0b00000000u,
+            0b00000000u,
+            0b00000100u,
+            0b00000100u,
+            0b00000101u,
+            0b00000101u,
+        )
+        assertEquals(expected, actual)
+    }
+
     @Test fun boardDataUBytesToULongListSize9() {
         assertFailsWith(
             exceptionClass = IllegalArgumentException::class,

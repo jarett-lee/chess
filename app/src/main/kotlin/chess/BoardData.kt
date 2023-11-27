@@ -219,4 +219,25 @@ data class BoardData(
 
         return newBoard
     }
+
+    fun reverse(): BoardData {
+        return this.copy(
+            whitePawns = BitUtils.rotate180(blackPawns),
+            whiteKnights = BitUtils.rotate180(blackKnights),
+            whiteBishops = BitUtils.rotate180(blackBishops),
+            whiteRooks = BitUtils.rotate180(blackRooks),
+            whiteQueens = BitUtils.rotate180(blackQueens),
+            whiteKings = BitUtils.rotate180(blackKings),
+            blackPawns = BitUtils.rotate180(whitePawns),
+            blackKnights = BitUtils.rotate180(whiteKnights),
+            blackBishops = BitUtils.rotate180(whiteBishops),
+            blackRooks = BitUtils.rotate180(whiteRooks),
+            blackQueens = BitUtils.rotate180(whiteQueens),
+            blackKings = BitUtils.rotate180(whiteKings),
+
+            whiteTurn = !whiteTurn,
+            pieceStayed = BitUtils.rotate180(pieceStayed),
+            enPassantSquare = BitUtils.rotate180(enPassantSquare),
+        )
+    }
 }
