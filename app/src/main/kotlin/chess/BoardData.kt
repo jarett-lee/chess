@@ -222,6 +222,21 @@ data class BoardData(
         return newBoard
     }
 
+    fun kingCaptureBoard(originalSquare: ULong, move: ULong): BoardData {
+        val newBoard = captureBlack(move)
+        return newBoard.kingMoveBoard(originalSquare, move)
+    }
+
+    fun kingMoveBoard(originalSquare: ULong, move: ULong): BoardData {
+        val newWhiteKings = (whiteKings and originalSquare.inv()) or move
+
+        val newBoard = regularMoveBoard(originalSquare, move).copy(
+            whiteKings = newWhiteKings,
+        )
+
+        return newBoard
+    }
+
     fun bishopCaptureBoard(originalSquare: ULong, move: ULong): BoardData {
         val newBoard = captureBlack(move)
         return newBoard.bishopMoveBoard(originalSquare, move)

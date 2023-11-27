@@ -77,6 +77,12 @@ object BitUtils {
         return (num and 0xFCFCFCFCFCFCFCFCuL) shr 2
     }
 
+    fun bitShiftRight3(num: ULong): ULong {
+        // 0b11111000 0xF8
+        return (num and 0xF8F8F8F8F8F8F8F8uL) shr 3
+    }
+
+
     fun uLongToHexString(num: ULong, prefix: String = "0x"): String {
         return "$prefix${num.toString(16).padStart(16, '0')}"
     }
