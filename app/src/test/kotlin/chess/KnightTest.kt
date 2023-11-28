@@ -5,7 +5,7 @@ import kotlin.test.assertEquals
 
 class KnightTest {
     @Test fun oneCornerKnight() {
-        val actual = Knight.moves(BoardData(
+        val actual = Knight.boards(BoardData(
             whiteKnights = BitUtils.uBytesToULong(
                 0b00000000u,
                 0b00000000u,
@@ -51,7 +51,7 @@ class KnightTest {
     }
 
     @Test fun twoCornerKnight() {
-        val actual = Knight.moves(BoardData(
+        val actual = Knight.boards(BoardData(
             whiteKnights = BitUtils.uBytesToULong(
                 0b00000001u,
                 0b00000000u,
@@ -126,7 +126,7 @@ class KnightTest {
 
 
     @Test fun oneCloseEdgeKnight() {
-        val actual = Knight.moves(BoardData(
+        val actual = Knight.boards(BoardData(
             whiteKnights = BitUtils.uBytesToULong(
                 0b00000000u,
                 0b00000000u,
@@ -186,7 +186,7 @@ class KnightTest {
     }
 
     @Test fun oneMiddleEdgeKnight() {
-        val actual = Knight.moves(BoardData(
+        val actual = Knight.boards(BoardData(
             whiteKnights = BitUtils.uBytesToULong(
                 0b00000000u,
                 0b00000000u,
@@ -260,7 +260,7 @@ class KnightTest {
     }
 
     @Test fun oneMiddleKnight() {
-        val actual = Knight.moves(BoardData(
+        val actual = Knight.boards(BoardData(
             whiteKnights = BitUtils.uBytesToULong(
                 0b00000000u,
                 0b00000000u,
@@ -401,7 +401,7 @@ class KnightTest {
             0b00000000u,
         )
 
-        val actual = Knight.moves(BoardData(
+        val actual = Knight.boards(BoardData(
             whiteKnights = BitUtils.uBytesToULong(
                 0b00000000u,
                 0b00000000u,
@@ -489,7 +489,7 @@ class KnightTest {
     }
 
     @Test fun knightBlocked() {
-        val actual = Knight.moves(BoardData(
+        val actual = Knight.boards(BoardData(
             whiteKnights = BitUtils.uBytesToULong(
                 0b00000000u,
                 0b00000000u,

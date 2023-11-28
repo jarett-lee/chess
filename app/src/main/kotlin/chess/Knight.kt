@@ -1,7 +1,7 @@
 package chess
 
 object Knight {
-    fun moves(board: BoardData): Set<BoardData> {
+    fun boards(board: BoardData): Set<BoardData> {
         val boards = mutableSetOf<BoardData>()
         val unblockedSquares = board.whitePieces().inv()
 
