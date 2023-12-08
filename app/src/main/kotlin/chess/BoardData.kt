@@ -19,11 +19,11 @@ data class BoardData(
     val enPassantSquare: ULong = 0uL,
 ) {
     fun whitePieces(): ULong {
-        return whitePawns or whiteKnights or whiteBishops or whiteRooks or whiteKings
+        return whitePawns or whiteKnights or whiteBishops or whiteRooks or whiteQueens or whiteKings
     }
 
     fun blackPieces(): ULong {
-        return blackPawns or blackKnights or blackBishops or blackRooks or blackKings
+        return blackPawns or blackKnights or blackBishops or blackRooks or blackQueens or blackKings
     }
 
     fun pieces(): ULong {
@@ -239,5 +239,37 @@ data class BoardData(
             pieceStayed = BitUtils.rotate180(pieceStayed),
             enPassantSquare = BitUtils.rotate180(enPassantSquare),
         )
+    }
+
+    fun toTextBoard(): String {
+        val board = this
+
+        var out = "----------------------------------------------------------------"
+        out = pieceToTextBoard(out, whitePawns, "P")
+        out = pieceToTextBoard(out, whiteKnights, "N")
+        out = pieceToTextBoard(out, whiteBishops, "B")
+        out = pieceToTextBoard(out, whiteRooks, "R")
+        out = pieceToTextBoard(out, whiteQueens, "Q")
+        out = pieceToTextBoard(out, whiteKings, "K")
+        out = pieceToTextBoard(out, blackPawns, "p")
+        out = pieceToTextBoard(out, blackKnights, "n")
+        out = pieceToTextBoard(out, blackBishops, "b")
+        out = pieceToTextBoard(out, blackRooks, "r")
+        out = pieceToTextBoard(out, blackQueens, "q")
+        out = pieceToTextBoard(out, blackKings, "k")
+
+        return out
+    }
+
+    private fun pieceToTextBoard(s: String, board: ULong, c: Char): String {
+        var out = s
+        for (i in 0 ..< 64) {
+            val mask = 1uL shl i
+            if ((mask and board) > 0uL) {
+                out = out.replaceRange(i, i+1, c)
+            }
+        }
+
+        return out
     }
 }
