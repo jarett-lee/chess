@@ -729,6 +729,54 @@ class KingTest {
         assertEquals(expected, actual)
     }
 
+    @Test fun kingCastleMovesBlackCastle() {
+        val board = BoardData(
+            blackKings = BitUtils.uBytesToULong(
+                0b00001000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+            ),
+            blackRooks = BitUtils.uBytesToULong(
+                0b10000001u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+            ),
+            pieceStayed = BitUtils.uBytesToULong(
+                0b10001001u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+                0b00000000u,
+            ),
+        )
+        val rboard = board.reverse()
+        val actual = BitUtils.uLongBinaryOf(King.castleMoves(rboard, rboard.whiteKings))
+        val expected = BitUtils.uLongBinaryOf(BitUtils.uBytesToULong(
+            0b00000000u,
+            0b00000000u,
+            0b00000000u,
+            0b00000000u,
+            0b00000000u,
+            0b00000000u,
+            0b00000000u,
+            0b01000100u,
+        ))
+        assertEquals(expected, actual)
+    }
+
     @Test fun kingMovesBlackCastle() {
         val board = BoardData(
             blackKings = BitUtils.uBytesToULong(

@@ -11,14 +11,14 @@ object King {
         if (canRightCastle(board, king)) {
             val newBoard = board
                 .kingMoveBoard(king, BitUtils.bitShiftRight2(king))
-                .rookMoveBoard(rightRookStart(), BitUtils.bitShiftLeft2(rightRookStart()))
+                .rookMoveBoard(rightRookStart(), BitUtils.bitShiftRight(king))
             boards.add(newBoard.copy(whiteTurn = !board.whiteTurn))
         }
 
         if (canLeftCastle(board, king)) {
             val newBoard = board
                 .kingMoveBoard(king, BitUtils.bitShiftLeft2(king))
-                .rookMoveBoard(leftRookStart(), BitUtils.bitShiftRight3(leftRookStart()))
+                .rookMoveBoard(leftRookStart(), BitUtils.bitShiftLeft(king))
             boards.add(newBoard.copy(whiteTurn = !board.whiteTurn))
         }
 
@@ -33,20 +33,47 @@ object King {
         return 0b10000000uL
     }
 
-    fun canRightCastle(board: BoardData, pieces: ULong): Boolean {
-        val kingStayed = (pieces and board.pieceStayed) != 0uL
+    fun canRightCastle(board: BoardData, king: ULong): Boolean {
+        val kingStayed = (king and board.pieceStayed) != 0uL
         val rightRookStayed = (rightRookStart() and board.pieceStayed and board.whiteRooks) != 0uL
-        val rightCastleClear = (board.pieces() and 0b00000110uL) == 0uL
+        if (!(kingStayed and rightRookStayed)) {
+            return false
+        }
 
-        return kingStayed and rightRookStayed and rightCastleClear
+        // TODO handle infinite loop in a better way
+        var i = 0
+        var check = BitUtils.bitShiftRight(king)
+        while((check != rightRookStart()) and (i < 8)) {
+            val clear = (board.pieces() and check) == 0uL
+            if (!clear) {
+                return false
+            }
+            check = check shr 1
+        }
+
+        return true
     }
 
-    fun canLeftCastle(board: BoardData, pieces: ULong): Boolean {
-        val kingStayed = (pieces and board.pieceStayed) != 0uL
+    fun canLeftCastle(board: BoardData, king: ULong): Boolean {
+        val kingStayed = (king and board.pieceStayed) != 0uL
         val leftRookStayed = (leftRookStart() and board.pieceStayed and board.whiteRooks) != 0uL
-        val leftCastleClear = (board.pieces() and 0b01110000uL) == 0uL
+        if (!(kingStayed and leftRookStayed)) {
+            return false
+        }
 
-        return kingStayed and leftRookStayed and leftCastleClear
+        // TODO handle infinite loop in a better way
+        var i = 0
+        var check = BitUtils.bitShiftLeft(king)
+        while((check != leftRookStart()) and (i < 8)) {
+            val clear = (board.pieces() and check) == 0uL
+            if (!clear) {
+                return false
+            }
+            check = check shl 1
+            i++
+        }
+
+        return true
     }
 
     fun moves(board: BoardData): Set<Move> {
@@ -57,6 +84,13 @@ object King {
         val moves = mutableSetOf<Move>()
 
         moves.addAll(normalMoves(board, pieces))
+        moves.addAll(castleMoves(board, pieces))
+
+        return moves
+    }
+
+    fun castleMoves(board: BoardData, pieces: ULong): Set<Move> {
+        val moves = mutableSetOf<Move>()
 
         // Assume only one king
         val king = pieces
