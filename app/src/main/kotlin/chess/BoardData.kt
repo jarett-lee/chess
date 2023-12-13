@@ -242,8 +242,6 @@ data class BoardData(
     }
 
     fun toTextBoard(): String {
-        val board = this
-
         var out = "----------------------------------------------------------------"
         out = pieceToTextBoard(out, whitePawns, "P")
         out = pieceToTextBoard(out, whiteKnights, "N")
@@ -257,11 +255,15 @@ data class BoardData(
         out = pieceToTextBoard(out, blackRooks, "r")
         out = pieceToTextBoard(out, blackQueens, "q")
         out = pieceToTextBoard(out, blackKings, "k")
+        out = out.reversed()
+        for (i in 7 downTo 1) {
+            out = out.replaceRange(i*8, i*8, "\n")
+        }
 
         return out
     }
 
-    private fun pieceToTextBoard(s: String, board: ULong, c: Char): String {
+    private fun pieceToTextBoard(s: String, board: ULong, c: String): String {
         var out = s
         for (i in 0 ..< 64) {
             val mask = 1uL shl i

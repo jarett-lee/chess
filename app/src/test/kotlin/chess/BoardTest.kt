@@ -4,6 +4,20 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class BoardTest {
+    @Test fun testToTextBoard() {
+        val board = Board()
+        val actual = board.boardData.toTextBoard()
+        val expected = """rnbqkbnr
+pppppppp
+--------
+--------
+--------
+--------
+PPPPPPPP
+RNBQKBNR"""
+        assertEquals(expected, actual)
+    }
+
     @Test fun board() {
         val board = Board()
 
